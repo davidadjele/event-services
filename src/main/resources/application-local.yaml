@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: event-services
+
+  # Configuration pour la base de données PostgreSQL en local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eventdb
+    username: ${POSTGRES_USER:eventuser}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        default_schema: public
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.event.services: DEBUG
