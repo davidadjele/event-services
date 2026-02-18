@@ -2,6 +2,7 @@ buildscript {
 	ext {
 		versionSpringBoot = '4.0.2'
 		versionSpringDependencyManagement = '1.1.7'
+		versionSpotless = '8.2.1'
 	}
 }
 
@@ -9,6 +10,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version "${versionSpringBoot}"
 	id 'io.spring.dependency-management' version "${versionSpringDependencyManagement}"
+	id 'com.diffplug.spotless' version "${versionSpotless}"
 }
 
 group = 'com.event'
@@ -48,4 +50,24 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Spotless configuration: format Java sources with Google Java Format and clean imports
+spotless {
+	java {
+		// Appliquer le formatage à tous les fichiers Java dans src/
+		target 'src/**/*.java'
+		// Appliquer le formatage Google Java Format version 1.17.0
+		googleJavaFormat('1.34.1')
+		// Retirer les imports inutilisés
+		removeUnusedImports()
+		// Réorganiser les imports selon les conventions de Google Java Format
+		importOrder 'java', 'javax', 'org', 'com', ''
+	}
+}
+
+// Exécuter automatiquement 'spotlessApply' avant 'check' et 'build'
+// Cela garantit que le formatage est vérifié dans le pipeline de build.
+tasks.matching { it.name in ['check', 'build'] }.configureEach {
+    dependsOn 'spotlessApply'
 }

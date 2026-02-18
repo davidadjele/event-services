@@ -90,6 +90,20 @@ docker-compose up -d --build
 ./gradlew clean
 ```
 
+## 🧹 Formatage du code (Spotless)
+
+Ce projet utilise le plugin Gradle Spotless pour uniformiser le style du code Java.
+
+Commandes utiles :
+
+```bash
+# Vérifie que les fichiers respectent le format configuré
+./gradlew spotlessCheck
+
+# Applique le formatage automatiquement (modifie les fichiers)
+./gradlew spotlessApply
+```
+
 ## 📁 Structure du projet
 
 ```
@@ -119,4 +133,3 @@ event-services/
 - PostgreSQL 16
 - Gradle
 - Docker & Docker Compose
-
