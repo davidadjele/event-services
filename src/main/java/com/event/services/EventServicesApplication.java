@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class EventServicesApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EventServicesApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(EventServicesApplication.class, args);
+  }
 }
