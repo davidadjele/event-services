@@ -4,4 +4,16 @@ spring:
 
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: validate # Permet de valider le schéma de la base de données sans le modifier
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
+# Jwt vars
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      issuer: one-event
+      accessTokenTtlMinutes: 15

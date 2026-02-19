@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update # Permet de mettre à jour le schéma de la base de données automatiquement (à utiliser avec précaution en production)
     show-sql: true
     properties:
       hibernate:
