@@ -31,6 +31,11 @@ public class AuthController {
     return auth.login(req.email(), req.password());
   }
 
+  @PostMapping("/register-participant")
+  public AuthService.AuthToken registerParticipant(@RequestBody RegisterParticipantRequest req) {
+    return auth.registerParticipant(req.email(), req.password());
+  }
+
   @PostMapping("/register-organizer")
   public AuthService.AuthToken registerOrganizer(@RequestBody RegisterOrganizerRequest req) {
     return auth.registerOrganizer(
@@ -47,6 +52,9 @@ public class AuthController {
   }
 
   public record LoginRequest(@Email @NotBlank String email, @NotBlank String password) {}
+
+  public record RegisterParticipantRequest(
+      @Email @NotBlank String email, @NotBlank String password) {}
 
   public record RegisterOrganizerRequest(
       @NotBlank String orgName,

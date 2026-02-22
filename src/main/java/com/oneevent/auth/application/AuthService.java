@@ -24,8 +24,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-  public static final String EMAIL_OU_MOT_DE_PASSE_INVALIDE = "Email ou mot de passe invalide";
-  public static final String AUTH_INVALID_CREDENTIALS = "AUTH_INVALID_CREDENTIALS";
+  private static final String EMAIL_OU_MOT_DE_PASSE_INVALIDE = "Email ou mot de passe invalide";
+  private static final String AUTH_INVALID_CREDENTIALS = "AUTH_INVALID_CREDENTIALS";
+  private static final String AUTH_EMAIL_EXISTS = "AUTH_EMAIL_EXISTS";
+  public static final String CET_EMAIL_EST_DEJA_UTILISE = "Cet email est déjà utilisé";
+
   private final UserRepository userRepo;
   private final OrganizationRepository orgRepo;
   private final PasswordEncoder encoder;
@@ -53,7 +56,7 @@ public class AuthService {
 
     String token =
         jwt.createToken(user.getId(), user.getEmail(), user.getRole(), user.getOrganizationId());
-    return new AuthToken(token);
+    return new AuthToken(token, user.getRole());
   }
 
   public AuthToken registerOrganizer(
@@ -67,8 +70,8 @@ public class AuthService {
         .ifPresent(
             u -> {
               throw AppException.builder(HttpStatus.CONFLICT)
-                  .message("Cet email est déjà utilisé")
-                  .errorCode("AUTH_EMAIL_EXISTS")
+                  .message(CET_EMAIL_EST_DEJA_UTILISE)
+                  .errorCode(AUTH_EMAIL_EXISTS)
                   .logMessage("Register organizer failed: email exists " + email)
                   .build();
             });
@@ -97,8 +100,35 @@ public class AuthService {
 
     String token =
         jwt.createToken(user.getId(), user.getEmail(), user.getRole(), user.getOrganizationId());
-    return new AuthToken(token);
+    return new AuthToken(token, user.getRole());
   }
 
-  public record AuthToken(String accessToken) {}
+  public AuthToken registerParticipant(String email, String password) {
+    userRepo
+        .findByEmail(email)
+        .ifPresent(
+            u -> {
+              throw AppException.builder(HttpStatus.CONFLICT)
+                  .message(CET_EMAIL_EST_DEJA_UTILISE)
+                  .errorCode(AUTH_EMAIL_EXISTS)
+                  .logMessage("Register participant failed: email exists " + email)
+                  .build();
+            });
+
+    var user =
+        User.builder()
+            .id(UUID.randomUUID())
+            .organizationId(null)
+            .email(email)
+            .passwordHash(encoder.encode(password))
+            .role(Role.PARTICIPANT)
+            .status(UserStatus.ACTIVE)
+            .build();
+    userRepo.save(user);
+
+    String token = jwt.createToken(user.getId(), user.getEmail(), user.getRole(), null);
+    return new AuthToken(token, user.getRole());
+  }
+
+  public record AuthToken(String accessToken, Role role) {}
 }

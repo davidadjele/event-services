@@ -28,7 +28,7 @@ public class User extends AuditableEntity {
   @Id private UUID id;
 
   @Column(name = "organization_id")
-  private UUID organizationId; // null si SUPER_ADMIN
+  private UUID organizationId; // null si SUPER_ADMIN ou PARTICIPANT
 
   @Column(nullable = false, unique = true)
   private String email;
