@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.oneevent.shared.exception.AppException;
+import com.oneevent.shared.security.principal.AuthenticatedUser;
 
 import lombok.NoArgsConstructor;
 
@@ -27,8 +28,8 @@ import lombok.NoArgsConstructor;
  * <p>Conventions :
  *
  * <ul>
- *   <li>Le principal attendu est un objet de type {@link JwtService.DecodedAuth} ; si le principal
- *       est absent ou d'un type différent, une {@link AppException} avec statut {@link
+ *   <li>Le principal attendu est un objet de type {@link AuthenticatedUser} ; si le principal est
+ *       absent ou d'un type différent, une {@link AppException} avec statut {@link
  *       HttpStatus#UNAUTHORIZED} est levée ;
  *   <li>Pour les contrôles d'accès relatifs à l'organisation, la méthode {@link #requireOrgId()}
  *       renvoie UUID de l'organisation ou lève une {@link AppException} avec statut {@link
@@ -65,18 +66,18 @@ public final class SecurityContext {
    * <ul>
    *   <li>Si authentication ou le principal est absent, lance une {@link AppException} avec {@link
    *       HttpStatus#UNAUTHORIZED} ;
-   *   <li>Si le principal n'est pas de type {@link JwtService.DecodedAuth}, lance également une
-   *       {@link AppException} d'authentification requise.
+   *   <li>Si le principal n'est pas de type {@link AuthenticatedUser}, lance également une {@link
+   *       AppException} d'authentification requise.
    * </ul>
    *
-   * @return le principal sous forme de {@link JwtService.DecodedAuth}
+   * @return le principal sous forme de {@link AuthenticatedUser}
    * @throws AppException avec statut 401 si l'utilisateur n'est pas authentifié
    */
-  public static JwtService.DecodedAuth principal() {
+  public static AuthenticatedUser principal() {
     var auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth == null
         || auth.getPrincipal() == null
-        || !(auth.getPrincipal() instanceof JwtService.DecodedAuth p)) {
+        || !(auth.getPrincipal() instanceof AuthenticatedUser p)) {
       throw AppException.builder(HttpStatus.UNAUTHORIZED)
           .message("Non authentifié")
           .errorCode("AUTH_REQUIRED")

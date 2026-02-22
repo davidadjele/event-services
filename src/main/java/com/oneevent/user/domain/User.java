@@ -6,6 +6,8 @@ import com.oneevent.shared.auditing.AuditableEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -34,9 +36,11 @@ public class User extends AuditableEntity {
   @Column(name = "password_hash", nullable = false)
   private String passwordHash;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 40)
-  private String role; // SUPER_ADMIN, ORGANIZER, SCANNER, PARTICIPANT
+  private Role role; // SUPER_ADMIN, ORGANIZER, SCANNER, PARTICIPANT
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
-  private String status; // ACTIVE, SUSPENDED
+  private UserStatus status; // ACTIVE, SUSPENDED
 }

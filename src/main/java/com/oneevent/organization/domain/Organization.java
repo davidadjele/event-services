@@ -3,9 +3,12 @@ package com.oneevent.organization.domain;
 import java.util.UUID;
 
 import com.oneevent.shared.auditing.AuditableEntity;
+import com.oneevent.shared.validation.CurrencyCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -28,12 +31,15 @@ public class Organization extends AuditableEntity {
   @Column(nullable = false, length = 180)
   private String name;
 
-  @Column(name = "country_code", nullable = false, length = 2)
-  private String countryCode;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "country_code", nullable = false, length = 3)
+  private CountryCode countryCode;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "currency_code", nullable = false, length = 3)
-  private String currencyCode;
+  private CurrencyCode currencyCode;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
-  private String status; // ACTIVE, SUSPENDED
+  private OrganizationStatus status; // ACTIVE, SUSPENDED
 }

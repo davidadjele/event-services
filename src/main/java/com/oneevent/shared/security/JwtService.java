@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.oneevent.shared.security.principal.AuthenticatedUser;
+import com.oneevent.user.domain.Role;
 
 /**
  * Service utilitaire pour la création et la validation de JSON Web Tokens (JWT).
@@ -73,7 +75,7 @@ public class JwtService {
    * @param orgId identifiant d'organisation (peut être null)
    * @return le token JWT compact (String) prêt à être retourné au client
    */
-  public String createToken(UUID userId, String email, String role, UUID orgId) {
+  public String createToken(UUID userId, String email, Role role, UUID orgId) {
     Instant now = Instant.now();
     Instant exp = now.plusSeconds(ttlMinutes * 60);
 
@@ -82,7 +84,7 @@ public class JwtService {
             .withIssuer(issuer)
             .withSubject(userId.toString())
             .withClaim("email", email)
-            .withClaim("role", role)
+            .withClaim("role", role.name())
             .withIssuedAt(Date.from(now))
             .withExpiresAt(Date.from(exp));
 
@@ -99,24 +101,17 @@ public class JwtService {
    * par le consommateur ou par un handler global.
    *
    * @param token le token JWT compact fourni par le client
-   * @return un objet {@link DecodedAuth} contenant les informations extraites du token
+   * @return un objet {@link AuthenticatedUser} contenant les informations extraites du token
    */
-  public DecodedAuth decodeAndValidate(String token) {
+  public AuthenticatedUser decodeAndValidate(String token) {
     var jwt = JWT.require(algorithm).withIssuer(issuer).build().verify(token);
 
     UUID userId = UUID.fromString(jwt.getSubject());
     String email = jwt.getClaim("email").asString();
-    String role = jwt.getClaim("role").asString();
+    Role role = Role.valueOf(jwt.getClaim("role").asString());
     String orgIdStr = jwt.getClaim(ORG_ID).isNull() ? null : jwt.getClaim(ORG_ID).asString();
     UUID orgId = (orgIdStr == null) ? null : UUID.fromString(orgIdStr);
 
-    return new DecodedAuth(userId, email, role, orgId);
+    return new AuthenticatedUser(userId, email, role, orgId);
   }
-
-  /**
-   * DTO immuable contenant les informations décodées depuis le token JWT.
-   *
-   * <p>Champs : {@code userId}, {@code email}, {@code role}, {@code orgId} (peut être null).
-   */
-  public record DecodedAuth(UUID userId, String email, String role, UUID orgId) {}
 }
