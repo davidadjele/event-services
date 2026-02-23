@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.util.HtmlUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,6 +71,48 @@ public class GlobalExceptionHandler {
             HttpStatus.BAD_REQUEST.name(),
             msg.isBlank() ? "Requête invalide." : msg,
             "VALIDATION_ERROR",
+            traceId);
+    return ResponseEntity.badRequest().body(body);
+  }
+
+  /**
+   * Gère les erreurs de conversion de paramètres (ex: UUID invalide, format de date incorrect).
+   *
+   * @param ex l'exception de type mismatch
+   * @param req la requête HTTP
+   * @return une réponse 400 Bad Request avec un message d'erreur clair
+   */
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ApiError> handleTypeMismatch(
+      MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+    String traceId = traceId();
+
+    String paramName = ex.getName();
+    String requiredType =
+        ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
+    String providedValue = ex.getValue() != null ? ex.getValue().toString() : "null";
+
+    String msg =
+        String.format(
+            "Paramètre '%s' invalide : valeur '%s' ne peut pas être convertie en %s",
+            paramName, providedValue, requiredType);
+
+    log.warn(
+        "[{}] Type mismatch for parameter '{}': provided='{}', required={}",
+        traceId,
+        paramName,
+        providedValue,
+        requiredType);
+
+    String safeUri = HtmlUtils.htmlEscape(req.getRequestURI());
+    ApiError body =
+        new ApiError(
+            Instant.now(),
+            safeUri,
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.name(),
+            msg,
+            "INVALID_PARAMETER",
             traceId);
     return ResponseEntity.badRequest().body(body);
   }

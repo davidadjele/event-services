@@ -6,6 +6,7 @@ buildscript {
 		versionLombok = '1.18.42'
 		verionJavaJwt = '4.5.1'
 		versionOpenApiSpringDoc = '3.0.1'
+		versionMapStruct = '1.6.3'
 	}
 }
 
@@ -64,8 +65,10 @@ dependencies {
 	// Lombok for builders/getters to simplify boilerplate
 	compileOnly "org.projectlombok:lombok:${versionLombok}"
 	annotationProcessor "org.projectlombok:lombok:${versionLombok}"
-	testCompileOnly "org.projectlombok:lombok:${versionLombok}"
-	testAnnotationProcessor "org.projectlombok:lombok:${versionLombok}"
+
+	// MapStruct for mapping between DTOs and entities
+	implementation "org.mapstruct:mapstruct:${versionMapStruct}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${versionMapStruct}"
 }
 
 tasks.named('test') {
