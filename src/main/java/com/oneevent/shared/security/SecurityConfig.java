@@ -31,7 +31,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             reg ->
                 reg.requestMatchers(
-                        "/api/v1/auth/**",
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/register-participant",
+                        "/api/v1/auth/register-organizer",
                         "/actuator/health",
                         "/v1/one-event-api-docs/**",
                         "/swagger-ui/**",

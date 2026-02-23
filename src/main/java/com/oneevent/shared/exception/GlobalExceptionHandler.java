@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,14 +44,22 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(ex.getHttpStatus()).body(body);
   }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ApiError> handleValidation(
-      MethodArgumentNotValidException ex, HttpServletRequest req) {
+  // java
+  @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+  public ResponseEntity<ApiError> handleValidation(Exception ex, HttpServletRequest req) {
     String traceId = traceId();
-    String msg =
-        ex.getBindingResult().getFieldErrors().stream()
-            .map(this::fieldMsg)
-            .collect(Collectors.joining("; "));
+
+    String msg;
+    if (ex instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
+      msg =
+          methodArgumentNotValidException.getBindingResult().getFieldErrors().stream()
+              .map(this::fieldMsg)
+              .collect(Collectors.joining("; "));
+    } else if (ex instanceof HttpMessageNotReadableException) {
+      msg = "Corps de requête invalide ou mal formé.";
+    } else {
+      msg = "Requête invalide.";
+    }
 
     String safeUri = HtmlUtils.htmlEscape(req.getRequestURI());
     ApiError body =

@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,7 +52,7 @@ public class AuthController {
       description = "Identifiants de connexion (email et mot de passe)",
       required = true)
   @PostMapping("/login")
-  public AuthService.AuthToken login(@RequestBody LoginRequest req) {
+  public AuthService.AuthToken login(@Valid @RequestBody LoginRequest req) {
     return auth.login(req.email(), req.password());
   }
 
@@ -72,7 +73,8 @@ public class AuthController {
       description = "Informations d'inscription du participant",
       required = true)
   @PostMapping("/register-participant")
-  public AuthService.AuthToken registerParticipant(@RequestBody RegisterParticipantRequest req) {
+  public AuthService.AuthToken registerParticipant(
+      @Valid @RequestBody RegisterParticipantRequest req) {
     return auth.registerParticipant(req.email(), req.password());
   }
 
@@ -93,7 +95,7 @@ public class AuthController {
       description = "Informations d'inscription de l'organisateur et de son organisation",
       required = true)
   @PostMapping("/register-organizer")
-  public AuthService.AuthToken registerOrganizer(@RequestBody RegisterOrganizerRequest req) {
+  public AuthService.AuthToken registerOrganizer(@Valid @RequestBody RegisterOrganizerRequest req) {
     return auth.registerOrganizer(
         req.orgName(), req.countryCode(), req.currencyCode(), req.email(), req.password());
   }
