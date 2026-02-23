@@ -1,4 +1,4 @@
-# Event Services
+# OneEvent Services
 
 Plateforme de gestion des événements en Afrique
 

@@ -1,4 +1,4 @@
-package com.event.services;
+package com.oneevent;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

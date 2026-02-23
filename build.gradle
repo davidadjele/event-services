@@ -3,6 +3,9 @@ buildscript {
 		versionSpringBoot = '4.0.2'
 		versionSpringDependencyManagement = '1.1.7'
 		versionSpotless = '8.2.1'
+		versionLombok = '1.18.42'
+		verionJavaJwt = '4.5.1'
+		versionOpenApiSpringDoc = '3.0.1'
 	}
 }
 
@@ -13,7 +16,7 @@ plugins {
 	id 'com.diffplug.spotless' version "${versionSpotless}"
 }
 
-group = 'com.event'
+group = 'com.oneevent'
 version = '0.0.1'
 description = 'Plateforme de gestion des évènement en Afrique'
 
@@ -33,6 +36,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-flyway'
+
+	// Jackson 2 support for JSON serialization/deserialization
+	implementation("org.springframework.boot:spring-boot-jackson2")
+
+	// Flyway PostgreSQL support
+	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	// JWT for authentication
+	implementation "com.auth0:java-jwt:${verionJavaJwt}"
+
+	// OpenAPI/Swagger Documentation
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versionOpenApiSpringDoc}"
 
 	// PostgreSQL JDBC Driver
 	runtimeOnly 'org.postgresql:postgresql'
@@ -40,12 +56,16 @@ dependencies {
 	// H2 for testing
 	testRuntimeOnly 'com.h2database:h2'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
+	// Spring Boot Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Lombok for builders/getters to simplify boilerplate
+	compileOnly "org.projectlombok:lombok:${versionLombok}"
+	annotationProcessor "org.projectlombok:lombok:${versionLombok}"
+	testCompileOnly "org.projectlombok:lombok:${versionLombok}"
+	testAnnotationProcessor "org.projectlombok:lombok:${versionLombok}"
 }
 
 tasks.named('test') {

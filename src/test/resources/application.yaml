@@ -2,8 +2,10 @@ spring:
   application:
     name: event-services-test
 
+  flyway:
+    enabled: false
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:oneeventdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -17,3 +19,11 @@ spring:
   test:
     database:
       replace: none
+
+# Jwt vars
+app:
+  security:
+    jwt:
+      secret: test-secret-key-for-jwt-minimum-32-characters-required-for-security
+      issuer: one-event
+      accessTokenTtlMinutes: 15
