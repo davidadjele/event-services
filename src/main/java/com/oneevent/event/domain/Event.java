@@ -37,8 +37,7 @@ public class Event extends AuditableEntity {
   @Column(columnDefinition = "text")
   private String description;
 
-  @Column()
-  private String location;
+  @Column() private String location;
 
   @Column(name = "start_date", nullable = false)
   private Instant startDate;
