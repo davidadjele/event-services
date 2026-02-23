@@ -22,9 +22,6 @@ public class EventService {
 
   private static final String EVENEMENT_INTROUVABLE = "Événement introuvable";
   private static final String NOT_FOUND = "EVENT_NOT_FOUND";
-  private static final String ORG_REQUIRED_FOR_ADMIN_ENDPOINT = "ORG_REQUIRED_FOR_ADMIN_ENDPOINT";
-  private static final String ORGANIZATION_REQUISE_POUR_SUPER_ADMIN_SUR_CET_ENDPOINT =
-      "Organization requise pour SUPER_ADMIN sur cet endpoint";
   public static final String EVENT_ID = " eventId=";
 
   private final EventRepository repo;
