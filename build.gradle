@@ -5,6 +5,7 @@ buildscript {
 		versionSpotless = '8.2.1'
 		versionLombok = '1.18.42'
 		verionJavaJwt = '4.5.1'
+		versionOpenApiSpringDoc = '3.0.1'
 	}
 }
 
@@ -43,6 +44,9 @@ dependencies {
 	// JWT for authentication
 	implementation "com.auth0:java-jwt:${verionJavaJwt}"
 
+	// OpenAPI/Swagger Documentation
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versionOpenApiSpringDoc}"
+
 	// PostgreSQL JDBC Driver
 	runtimeOnly 'org.postgresql:postgresql'
 
@@ -59,9 +63,6 @@ dependencies {
 	// Lombok for builders/getters to simplify boilerplate
 	compileOnly "org.projectlombok:lombok:${versionLombok}"
 	annotationProcessor "org.projectlombok:lombok:${versionLombok}"
-
-//	testImplementation("org.testcontainers:junit-jupiter:1.20.4")
-//	testImplementation("org.testcontainers:postgresql:1.20.4")
 }
 
 tasks.named('test') {

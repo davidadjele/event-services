@@ -30,7 +30,12 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             reg ->
-                reg.requestMatchers("/api/v1/auth/**", "/actuator/health")
+                reg.requestMatchers(
+                        "/api/v1/auth/**",
+                        "/actuator/health",
+                        "/v1/one-event-api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

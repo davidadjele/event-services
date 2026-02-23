@@ -10,8 +10,47 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+# Configuration OpenAPI/Swagger
+springdoc:
+  # Configuration du point d'accès des specs OpenAPI (JSON/YAML)
+  api-docs:
+    # 'path' définit l'URL publique où OpenAPI expose le document de spécification.
+    path: /v1/one-event-api-docs
+    # 'enabled' active ou désactive l'exposition des specs OpenAPI.
+    enabled: true
+  # Configuration de l'interface Swagger UI (page web interactive)
+  swagger-ui:
+    # URL de la page Swagger UI.
+    # Par défaut SpringDoc expose swagger-ui à /swagger-ui.html ou /swagger-ui/index.html selon la version.
+    # Recommandation : ne pas mettre swagger-ui sur la racine publique en production sans protection.
+    path: /swagger-ui.html
+    # Active la page Swagger UI (true/false)
+    enabled: true
+    # Classement des opérations dans l'UI (par nom, méthode, ou autre stratégie)
+    operationsSorter: method
+    # Classement des tags (groupes) dans l'UI
+    # - 'alpha' trie les tags par ordre alphabétique
+    # - utile pour rendre la navigation plus prévisible
+    tagsSorter: alpha
+    # 'tryItOutEnabled' contrôle le bouton "Try it out" qui exécute des requêtes depuis l'UI
+    # - true : l'utilisateur peut exécuter des appels HTTP directement depuis Swagger UI
+    # - false : désactive la fonctionnalité d'appel (sécurité accrue en prod)
+    tryItOutEnabled: true
+    # 'filter' active le champ de recherche/filtrage dans Swagger UI
+    # - true : affiche un champ permettant de filtrer les endpoints par texte
+    # - utile quand l'API a beaucoup d'endpoints
+    filter: true
+    # 'displayRequestDuration' affiche le temps d'exécution des requêtes dans l'UI
+    # - true : affiche la durée (utile pour debug/perf)
+    displayRequestDuration: true
+  # 'show-actuator' : permet d'afficher ou non les endpoints d'Actuator dans la doc
+  # - false : n'expose pas automatiquement les endpoints d'actuator dans la documentation publique
+  # - true : intègre les endpoints actuator (attention aux endpoints sensibles)
+  show-actuator: false
+
 # Jwt vars
 app:
+  version: 0.0.1
   security:
     jwt:
       secret: ${JWT_SECRET}
