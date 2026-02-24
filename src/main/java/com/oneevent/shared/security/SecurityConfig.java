@@ -34,6 +34,7 @@ public class SecurityConfig {
                         "/api/v1/auth/login",
                         "/api/v1/auth/register-participant",
                         "/api/v1/auth/register-organizer",
+                        "/api/v1/public/**",
                         "/actuator/health",
                         "/v1/one-event-api-docs/**",
                         "/swagger-ui/**",
