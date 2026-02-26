@@ -5,7 +5,7 @@ create table ticket_types (
 
                               name varchar(120) not null,
                               price numeric(12,2) not null,
-                              quantity_total int not null,
+                              quantity_available int not null,
                               quantity_sold int not null default 0,
 
                               sale_start timestamptz null,
