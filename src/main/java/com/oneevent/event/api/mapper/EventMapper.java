@@ -5,8 +5,9 @@ import org.mapstruct.Mapper;
 import com.oneevent.event.api.dto.EventResponse;
 import com.oneevent.event.api.dto.PublicEventResponse;
 import com.oneevent.event.domain.Event;
+import com.oneevent.shared.config.GlobalMapperConfig;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = GlobalMapperConfig.class)
 public interface EventMapper {
   EventResponse toResponse(Event event);
 

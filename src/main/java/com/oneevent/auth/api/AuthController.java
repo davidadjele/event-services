@@ -1,5 +1,7 @@
 package com.oneevent.auth.api;
 
+import static com.oneevent.shared.constants.ApiPaths.AUTH;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +31,7 @@ import lombok.RequiredArgsConstructor;
     name = "Authentification",
     description = "API de gestion de l'authentification et inscription des utilisateurs")
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(AUTH)
 @RequiredArgsConstructor
 public class AuthController {
 

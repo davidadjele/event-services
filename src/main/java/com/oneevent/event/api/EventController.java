@@ -1,5 +1,7 @@
 package com.oneevent.event.api;
 
+import static com.oneevent.shared.constants.ApiPaths.EVENTS;
+
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -29,7 +31,7 @@ import lombok.RequiredArgsConstructor;
     name = "Gestion des événements",
     description = "API de gestion des événements pour les organisateurs et super admins")
 @RestController
-@RequestMapping("/api/v1/events")
+@RequestMapping(EVENTS)
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class EventController {

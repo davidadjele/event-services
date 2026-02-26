@@ -1,5 +1,7 @@
 package com.oneevent.event.api;
 
+import static com.oneevent.shared.constants.ApiPaths.PUBLIC_EVENTS;
+
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -26,7 +28,7 @@ import lombok.RequiredArgsConstructor;
         "API publique pour consulter les événements publiés. Aucune authentification requise.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/public/events")
+@RequestMapping(PUBLIC_EVENTS)
 public class PublicEventController {
 
   private final EventService service;
