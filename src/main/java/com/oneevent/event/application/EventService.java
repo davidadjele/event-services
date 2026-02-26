@@ -29,7 +29,7 @@ public class EventService {
   // ===== Organizer/Admin (auth) =====
 
   public Event create(CreateEventCommand cmd) {
-    UUID orgId = resolveOrgIdForWrite(cmd.organizationId());
+    UUID orgId = SecurityContext.resolveOrgIdForWrite(cmd.organizationId());
 
     validateDates(cmd.startDate(), cmd.endDate());
 
@@ -49,18 +49,18 @@ public class EventService {
   }
 
   public Page<Event> listMine(UUID orgIdFilterForAdmin, Pageable pageable) {
-    UUID orgId = resolveOrgIdForList(orgIdFilterForAdmin);
+    UUID orgId = SecurityContext.resolveOrgIdForList(orgIdFilterForAdmin);
     return repo.findAllByOrganizationIdAndDeletedAtIsNull(orgId, pageable);
   }
 
   public Event getMine(UUID orgIdFilterForAdmin, UUID eventId) {
-    UUID orgId = resolveOrgIdForList(orgIdFilterForAdmin);
+    UUID orgId = SecurityContext.resolveOrgIdForList(orgIdFilterForAdmin);
     return repo.findByIdAndOrganizationIdAndDeletedAtIsNull(eventId, orgId)
         .orElseThrow(() -> notFound(orgId, eventId));
   }
 
   public Event update(UUID eventId, UUID orgIdFilterForAdmin, UpdateEventCommand cmd) {
-    UUID orgId = resolveOrgIdForList(orgIdFilterForAdmin);
+    UUID orgId = SecurityContext.resolveOrgIdForList(orgIdFilterForAdmin);
     Event e =
         repo.findByIdAndOrganizationIdAndDeletedAtIsNull(eventId, orgId)
             .orElseThrow(() -> notFound(orgId, eventId));
@@ -80,7 +80,7 @@ public class EventService {
   }
 
   public void softDelete(UUID eventId, UUID orgIdFilterForAdmin) {
-    UUID orgId = resolveOrgIdForList(orgIdFilterForAdmin);
+    UUID orgId = SecurityContext.resolveOrgIdForList(orgIdFilterForAdmin);
     Event e =
         repo.findByIdAndOrganizationIdAndDeletedAtIsNull(eventId, orgId)
             .orElseThrow(() -> notFound(orgId, eventId));
@@ -102,46 +102,18 @@ public class EventService {
                 AppException.builder(HttpStatus.NOT_FOUND)
                     .message(EVENEMENT_INTROUVABLE)
                     .errorCode(NOT_FOUND)
-                    .logMessage("Public event not found eventId=" + eventId)
+                    .logMessage("[Event][getPublished] Introuvable : eventId=" + eventId)
                     .build());
   }
 
   // ===== helpers =====
-
-  private UUID resolveOrgIdForWrite(UUID requestedOrgId) {
-    if (SecurityContext.isSuperAdmin()) {
-      if (requestedOrgId == null) {
-        throw AppException.builder(HttpStatus.BAD_REQUEST)
-            .message("organizationId est requis pour SUPER_ADMIN")
-            .errorCode("ORG_ID_REQUIRED")
-            .logMessage("SUPER_ADMIN create event missing organizationId")
-            .build();
-      }
-      return requestedOrgId;
-    }
-    return SecurityContext.requireOrgId();
-  }
-
-  private UUID resolveOrgIdForList(UUID orgIdFilterForAdmin) {
-    if (SecurityContext.isSuperAdmin()) {
-      if (orgIdFilterForAdmin == null) {
-        throw AppException.builder(HttpStatus.BAD_REQUEST)
-            .message("organizationId est requis pour SUPER_ADMIN sur cet endpoint")
-            .errorCode("ORG_FILTER_REQUIRED")
-            .logMessage("SUPER_ADMIN missing orgId filter")
-            .build();
-      }
-      return orgIdFilterForAdmin;
-    }
-    return SecurityContext.requireOrgId();
-  }
 
   private void validateDates(Instant start, Instant end) {
     if (end != null && end.isBefore(start)) {
       throw AppException.builder(HttpStatus.BAD_REQUEST)
           .message("La date de fin doit être après la date de début")
           .errorCode("INVALID_DATES")
-          .logMessage("Invalid dates start=" + start + " end=" + end)
+          .logMessage("[Event] Dates invalides : start=" + start + " end=" + end)
           .build();
     }
   }
@@ -150,7 +122,7 @@ public class EventService {
     return AppException.builder(HttpStatus.NOT_FOUND)
         .message(EVENEMENT_INTROUVABLE)
         .errorCode(NOT_FOUND)
-        .logMessage("Event not found orgId=" + orgId + EVENT_ID + eventId)
+        .logMessage("[Event] Introuvable : orgId=" + orgId + EVENT_ID + eventId)
         .build();
   }
 

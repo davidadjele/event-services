@@ -73,10 +73,10 @@ class TicketTypeServiceTest {
     @Test
     @DisplayName("Devrait créer un type de ticket avec succès")
     void shouldCreateTicketTypeSuccessfully() {
-      // Given
+      // Given — organizationId=null, résolu via resolveOrgIdForWrite dans le service
       TicketTypeService.CreateTicketTypeCommand cmd =
           new TicketTypeService.CreateTicketTypeCommand(
-              EVENT_ID, "Early Bird", new BigDecimal("25.00"), 100, TOMORROW, NEXT_WEEK);
+              null, EVENT_ID, "Early Bird", new BigDecimal("25.00"), 100, TOMORROW, NEXT_WEEK);
 
       Event event =
           Event.builder()
@@ -105,8 +105,7 @@ class TicketTypeServiceTest {
       when(repo.save(any(TicketType.class))).thenReturn(savedTicketType);
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When
         TicketType result = service.create(cmd);
@@ -132,7 +131,7 @@ class TicketTypeServiceTest {
       // Given
       TicketTypeService.CreateTicketTypeCommand cmd =
           new TicketTypeService.CreateTicketTypeCommand(
-              EVENT_ID, "Gratuit", BigDecimal.ZERO, 50, null, null);
+              null, EVENT_ID, "Gratuit", BigDecimal.ZERO, 50, null, null);
 
       Event event = createEvent();
       TicketType savedTicketType =
@@ -151,8 +150,7 @@ class TicketTypeServiceTest {
       when(repo.save(any(TicketType.class))).thenReturn(savedTicketType);
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When
         TicketType result = service.create(cmd);
@@ -168,15 +166,14 @@ class TicketTypeServiceTest {
       // Given
       TicketTypeService.CreateTicketTypeCommand cmd =
           new TicketTypeService.CreateTicketTypeCommand(
-              EVENT_ID, "Invalid", new BigDecimal("-10.00"), 100, null, null);
+              null, EVENT_ID, "Invalid", new BigDecimal("-10.00"), 100, null, null);
 
       Event event = createEvent();
       when(eventRepo.findByIdAndOrganizationIdAndDeletedAtIsNull(EVENT_ID, ORG_ID))
           .thenReturn(Optional.of(event));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.create(cmd))
@@ -193,15 +190,14 @@ class TicketTypeServiceTest {
       // Given
       TicketTypeService.CreateTicketTypeCommand cmd =
           new TicketTypeService.CreateTicketTypeCommand(
-              EVENT_ID, "Invalid", new BigDecimal("25.00"), 0, null, null);
+              null, EVENT_ID, "Invalid", new BigDecimal("25.00"), 0, null, null);
 
       Event event = createEvent();
       when(eventRepo.findByIdAndOrganizationIdAndDeletedAtIsNull(EVENT_ID, ORG_ID))
           .thenReturn(Optional.of(event));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.create(cmd))
@@ -218,6 +214,7 @@ class TicketTypeServiceTest {
       // Given
       TicketTypeService.CreateTicketTypeCommand cmd =
           new TicketTypeService.CreateTicketTypeCommand(
+              null,
               EVENT_ID,
               "Invalid",
               new BigDecimal("25.00"),
@@ -231,8 +228,7 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.of(event));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.create(cmd))
@@ -249,14 +245,13 @@ class TicketTypeServiceTest {
       // Given
       TicketTypeService.CreateTicketTypeCommand cmd =
           new TicketTypeService.CreateTicketTypeCommand(
-              EVENT_ID, "Ticket", new BigDecimal("25.00"), 100, null, null);
+              null, EVENT_ID, "Ticket", new BigDecimal("25.00"), 100, null, null);
 
       when(eventRepo.findByIdAndOrganizationIdAndDeletedAtIsNull(EVENT_ID, ORG_ID))
           .thenReturn(Optional.empty());
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.create(cmd))
@@ -289,11 +284,10 @@ class TicketTypeServiceTest {
           .thenReturn(ticketTypes);
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
-        List<TicketType> result = service.listByEventMine(EVENT_ID);
+        List<TicketType> result = service.listByEventMine(null, EVENT_ID);
 
         // Then
         assertThat(result).hasSize(2);
@@ -312,11 +306,10 @@ class TicketTypeServiceTest {
           .thenReturn(List.of());
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
-        List<TicketType> result = service.listByEventMine(EVENT_ID);
+        List<TicketType> result = service.listByEventMine(null, EVENT_ID);
 
         // Then
         assertThat(result).isEmpty();
@@ -331,11 +324,10 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.empty());
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
-        assertThatThrownBy(() -> service.listByEventMine(EVENT_ID))
+        assertThatThrownBy(() -> service.listByEventMine(null, EVENT_ID))
             .isInstanceOf(AppException.class)
             .extracting(e -> ((AppException) e).getHttpStatus())
             .isEqualTo(HttpStatus.NOT_FOUND);
@@ -368,13 +360,12 @@ class TicketTypeServiceTest {
       when(repo.save(any(TicketType.class))).thenReturn(updated);
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         TicketTypeService.PatchTicketTypeCommand cmd =
             new TicketTypeService.PatchTicketTypeCommand("New Name", null, null, null, null);
-        TicketType result = service.update(TICKET_TYPE_ID, cmd);
+        TicketType result = service.update(TICKET_TYPE_ID, null, cmd);
 
         // Then
         assertThat(result.getName()).isEqualTo("New Name");
@@ -392,14 +383,13 @@ class TicketTypeServiceTest {
       when(repo.save(any(TicketType.class))).thenAnswer(inv -> inv.getArgument(0));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         TicketTypeService.PatchTicketTypeCommand cmd =
             new TicketTypeService.PatchTicketTypeCommand(
                 null, new BigDecimal("50.00"), null, null, null);
-        TicketType result = service.update(TICKET_TYPE_ID, cmd);
+        TicketType result = service.update(TICKET_TYPE_ID, null, cmd);
 
         // Then
         assertThat(result.getPrice()).isEqualByComparingTo(new BigDecimal("50.00"));
@@ -418,14 +408,13 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.of(existing));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
         TicketTypeService.PatchTicketTypeCommand cmd =
             new TicketTypeService.PatchTicketTypeCommand(null, null, 30, null, null);
 
-        assertThatThrownBy(() -> service.update(TICKET_TYPE_ID, cmd))
+        assertThatThrownBy(() -> service.update(TICKET_TYPE_ID, null, cmd))
             .isInstanceOf(AppException.class)
             .hasMessageContaining("quantité disponible ne peut pas être inférieure");
 
@@ -445,14 +434,13 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.of(existing));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then - saleEnd avant saleStart existant
         TicketTypeService.PatchTicketTypeCommand cmd =
             new TicketTypeService.PatchTicketTypeCommand(null, null, null, null, NOW);
 
-        assertThatThrownBy(() -> service.update(TICKET_TYPE_ID, cmd))
+        assertThatThrownBy(() -> service.update(TICKET_TYPE_ID, null, cmd))
             .isInstanceOf(AppException.class)
             .hasMessageContaining("fin de vente doit être après");
       }
@@ -466,14 +454,13 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.empty());
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
         TicketTypeService.PatchTicketTypeCommand cmd =
             new TicketTypeService.PatchTicketTypeCommand("New", null, null, null, null);
 
-        assertThatThrownBy(() -> service.update(TICKET_TYPE_ID, cmd))
+        assertThatThrownBy(() -> service.update(TICKET_TYPE_ID, null, cmd))
             .isInstanceOf(AppException.class)
             .extracting(e -> ((AppException) e).getHttpStatus())
             .isEqualTo(HttpStatus.NOT_FOUND);
@@ -492,14 +479,13 @@ class TicketTypeServiceTest {
       when(repo.save(any(TicketType.class))).thenAnswer(inv -> inv.getArgument(0));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         TicketTypeService.PatchTicketTypeCommand cmd =
             new TicketTypeService.PatchTicketTypeCommand(
                 "New VIP", new BigDecimal("150.00"), 200, TOMORROW, NEXT_WEEK);
-        TicketType result = service.update(TICKET_TYPE_ID, cmd);
+        TicketType result = service.update(TICKET_TYPE_ID, null, cmd);
 
         // Then
         assertThat(result.getName()).isEqualTo("New VIP");
@@ -527,11 +513,10 @@ class TicketTypeServiceTest {
       when(repo.save(any(TicketType.class))).thenAnswer(inv -> inv.getArgument(0));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
-        service.softDelete(TICKET_TYPE_ID);
+        service.softDelete(TICKET_TYPE_ID, null);
 
         // Then
         ArgumentCaptor<TicketType> captor = ArgumentCaptor.forClass(TicketType.class);
@@ -551,11 +536,10 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.of(existing));
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
-        assertThatThrownBy(() -> service.softDelete(TICKET_TYPE_ID))
+        assertThatThrownBy(() -> service.softDelete(TICKET_TYPE_ID, null))
             .isInstanceOf(AppException.class)
             .hasMessageContaining("Impossible de supprimer un type de ticket déjà vendu")
             .extracting(e -> ((AppException) e).getHttpStatus())
@@ -573,11 +557,10 @@ class TicketTypeServiceTest {
           .thenReturn(Optional.empty());
 
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
-        assertThatThrownBy(() -> service.softDelete(TICKET_TYPE_ID))
+        assertThatThrownBy(() -> service.softDelete(TICKET_TYPE_ID, null))
             .isInstanceOf(AppException.class)
             .extracting(e -> ((AppException) e).getHttpStatus())
             .isEqualTo(HttpStatus.NOT_FOUND);

@@ -270,7 +270,7 @@ class TicketTypeControllerTest {
               createTicketType("Early Bird", new BigDecimal("25.00"), 100, 10),
               createTicketType("VIP", new BigDecimal("100.00"), 50, 5));
 
-      when(service.listByEventMine(EVENT_ID)).thenReturn(ticketTypes);
+      when(service.listByEventMine(null, EVENT_ID)).thenReturn(ticketTypes);
 
       // When / Then
       mockMvc
@@ -280,7 +280,7 @@ class TicketTypeControllerTest {
           .andExpect(jsonPath("$[0].name").value("Early Bird"))
           .andExpect(jsonPath("$[1].name").value("VIP"));
 
-      verify(service).listByEventMine(EVENT_ID);
+      verify(service).listByEventMine(null, EVENT_ID);
     }
 
     @Test
@@ -288,7 +288,7 @@ class TicketTypeControllerTest {
     @WithMockUser
     void shouldReturnEmptyListWhenNoTicketTypes() throws Exception {
       // Given
-      when(service.listByEventMine(EVENT_ID)).thenReturn(List.of());
+      when(service.listByEventMine(null, EVENT_ID)).thenReturn(List.of());
 
       // When / Then
       mockMvc
@@ -302,7 +302,7 @@ class TicketTypeControllerTest {
     @WithMockUser
     void shouldReturn404WhenEventNotFound() throws Exception {
       // Given
-      when(service.listByEventMine(EVENT_ID))
+      when(service.listByEventMine(null, EVENT_ID))
           .thenThrow(
               AppException.builder(HttpStatus.NOT_FOUND)
                   .message("Événement introuvable")
@@ -356,7 +356,10 @@ class TicketTypeControllerTest {
               .quantitySold(10)
               .build();
 
-      when(service.update(eq(TICKET_TYPE_ID), any(TicketTypeService.PatchTicketTypeCommand.class)))
+      when(service.update(
+              eq(TICKET_TYPE_ID),
+              eq((UUID) null),
+              any(TicketTypeService.PatchTicketTypeCommand.class)))
           .thenReturn(updatedTicketType);
 
       // When / Then
@@ -373,7 +376,10 @@ class TicketTypeControllerTest {
           .andExpect(jsonPath("$.quantityAvailable").value(200));
 
       verify(service)
-          .update(eq(TICKET_TYPE_ID), any(TicketTypeService.PatchTicketTypeCommand.class));
+          .update(
+              eq(TICKET_TYPE_ID),
+              eq((UUID) null),
+              any(TicketTypeService.PatchTicketTypeCommand.class));
     }
 
     @Test
@@ -395,7 +401,10 @@ class TicketTypeControllerTest {
               .quantitySold(10)
               .build();
 
-      when(service.update(eq(TICKET_TYPE_ID), any(TicketTypeService.PatchTicketTypeCommand.class)))
+      when(service.update(
+              eq(TICKET_TYPE_ID),
+              eq((UUID) null),
+              any(TicketTypeService.PatchTicketTypeCommand.class)))
           .thenReturn(updatedTicketType);
 
       // When / Then
@@ -417,7 +426,10 @@ class TicketTypeControllerTest {
       UpdateTicketTypeRequest request =
           new UpdateTicketTypeRequest("Updated", null, null, null, null);
 
-      when(service.update(eq(TICKET_TYPE_ID), any(TicketTypeService.PatchTicketTypeCommand.class)))
+      when(service.update(
+              eq(TICKET_TYPE_ID),
+              eq((UUID) null),
+              any(TicketTypeService.PatchTicketTypeCommand.class)))
           .thenThrow(
               AppException.builder(HttpStatus.NOT_FOUND)
                   .message("Type de ticket introuvable")
@@ -459,7 +471,10 @@ class TicketTypeControllerTest {
       // Given
       UpdateTicketTypeRequest request = new UpdateTicketTypeRequest(null, null, 5, null, null);
 
-      when(service.update(eq(TICKET_TYPE_ID), any(TicketTypeService.PatchTicketTypeCommand.class)))
+      when(service.update(
+              eq(TICKET_TYPE_ID),
+              eq((UUID) null),
+              any(TicketTypeService.PatchTicketTypeCommand.class)))
           .thenThrow(
               AppException.builder(HttpStatus.BAD_REQUEST)
                   .message(
@@ -503,14 +518,14 @@ class TicketTypeControllerTest {
     @WithMockUser
     void shouldDeleteTicketTypeSuccessfully() throws Exception {
       // Given
-      doNothing().when(service).softDelete(TICKET_TYPE_ID);
+      doNothing().when(service).softDelete(TICKET_TYPE_ID, null);
 
       // When / Then
       mockMvc
           .perform(delete(BASE_URL + "/" + TICKET_TYPE_ID).with(authentication(createAuth())))
           .andExpect(status().isOk());
 
-      verify(service).softDelete(TICKET_TYPE_ID);
+      verify(service).softDelete(TICKET_TYPE_ID, null);
     }
 
     @Test
@@ -524,7 +539,7 @@ class TicketTypeControllerTest {
                   .errorCode("TICKET_TYPE_NOT_FOUND")
                   .build())
           .when(service)
-          .softDelete(TICKET_TYPE_ID);
+          .softDelete(TICKET_TYPE_ID, null);
 
       // When / Then
       mockMvc
@@ -543,7 +558,7 @@ class TicketTypeControllerTest {
                   .errorCode("TICKET_TYPE_ALREADY_SOLD")
                   .build())
           .when(service)
-          .softDelete(TICKET_TYPE_ID);
+          .softDelete(TICKET_TYPE_ID, null);
 
       // When / Then
       mockMvc

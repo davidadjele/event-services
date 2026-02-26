@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.oneevent.shared.exception.AppException;
 import com.oneevent.shared.security.principal.AuthenticatedUser;
+import com.oneevent.user.domain.Role;
 
 import lombok.NoArgsConstructor;
 
@@ -94,7 +95,7 @@ public final class SecurityContext {
    *     littérale), sinon {@code false}
    */
   public static boolean isSuperAdmin() {
-    return "SUPER_ADMIN".equals(principal().role());
+    return Role.SUPER_ADMIN == principal().role();
   }
 
   /**
@@ -124,5 +125,78 @@ public final class SecurityContext {
           .build();
     }
     return orgId;
+  }
+
+  /**
+   * Résout l'identifiant d'organisation pour une opération d'<b>écriture</b>.
+   *
+   * <p>Règles :
+   *
+   * <ul>
+   *   <li><b>SUPER_ADMIN</b> — {@code requestedOrgId} doit être fourni explicitement dans la
+   *       requête, sinon une {@link AppException} {@code 400} est levée.
+   *   <li><b>Organisateur</b> — {@code requestedOrgId} est ignoré ; l'orgId est lu depuis le token
+   *       JWT via {@link #requireOrgId()}.
+   * </ul>
+   *
+   * <p>Exemple :
+   *
+   * <pre>
+   *   UUID orgId = SecurityContext.resolveOrgIdForWrite(cmd.organizationId());
+   * </pre>
+   *
+   * @param requestedOrgId orgId fourni par le client (obligatoire pour SUPER_ADMIN)
+   * @return UUID de l'organisation résolue
+   * @throws AppException 400 si SUPER_ADMIN sans {@code requestedOrgId}
+   */
+  public static UUID resolveOrgIdForWrite(UUID requestedOrgId) {
+    if (isSuperAdmin()) {
+      if (requestedOrgId == null) {
+        throw AppException.builder(HttpStatus.BAD_REQUEST)
+            .message("organizationId est requis pour SUPER_ADMIN")
+            .errorCode("ORG_ID_REQUIRED")
+            .logMessage("SUPER_ADMIN write without organizationId")
+            .build();
+      }
+      return requestedOrgId;
+    }
+    return requireOrgId();
+  }
+
+  /**
+   * Résout l'identifiant d'organisation pour une opération de <b>lecture / liste</b> (avec filtre
+   * admin optionnel).
+   *
+   * <p>Règles :
+   *
+   * <ul>
+   *   <li><b>SUPER_ADMIN</b> — {@code orgIdFilter} doit être fourni (paramètre de requête), sinon
+   *       une {@link AppException} {@code 400} est levée.
+   *   <li><b>Organisateur</b> — {@code orgIdFilter} est ignoré ; l'orgId est lu depuis le token JWT
+   *       via {@link #requireOrgId()}.
+   * </ul>
+   *
+   * <p>Exemple :
+   *
+   * <pre>
+   *   UUID orgId = SecurityContext.resolveOrgIdForList(orgIdParam);
+   * </pre>
+   *
+   * @param orgIdFilter orgId passé en paramètre de requête (obligatoire pour SUPER_ADMIN)
+   * @return UUID de l'organisation résolue
+   * @throws AppException 400 si SUPER_ADMIN sans {@code orgIdFilter}
+   */
+  public static UUID resolveOrgIdForList(UUID orgIdFilter) {
+    if (isSuperAdmin()) {
+      if (orgIdFilter == null) {
+        throw AppException.builder(HttpStatus.BAD_REQUEST)
+            .message("organizationId est requis pour SUPER_ADMIN sur cet endpoint")
+            .errorCode("ORG_FILTER_REQUIRED")
+            .logMessage("SUPER_ADMIN missing orgId filter")
+            .build();
+      }
+      return orgIdFilter;
+    }
+    return requireOrgId();
   }
 }
