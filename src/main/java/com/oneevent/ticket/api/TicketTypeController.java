@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oneevent.shared.exception.ApiError;
 import com.oneevent.ticket.api.dto.CreateTicketTypeRequest;
 import com.oneevent.ticket.api.dto.TicketTypeResponse;
 import com.oneevent.ticket.api.dto.UpdateTicketTypeRequest;
@@ -25,6 +26,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -88,11 +90,26 @@ public class TicketTypeController {
         @ApiResponse(
             responseCode = "400",
             description =
-                "Requête invalide (prix négatif, quantité ≤ 0, fenêtre incohérente, orgId manquant pour super admin)"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
+                "Requête invalide (prix négatif, quantité ≤ 0, fenêtre incohérente, orgId manquant pour super admin)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "404",
-            description = "Événement introuvable ou n'appartient pas à l'organisation")
+            description = "Événement introuvable ou n'appartient pas à l'organisation",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description =
@@ -150,11 +167,26 @@ public class TicketTypeController {
                         @ArraySchema(schema = @Schema(implementation = TicketTypeResponse.class)))),
         @ApiResponse(
             responseCode = "400",
-            description = "UUID invalide ou orgId manquant pour super admin"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
+            description = "UUID invalide ou orgId manquant pour super admin",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "404",
-            description = "Événement introuvable ou n'appartient pas à l'organisation")
+            description = "Événement introuvable ou n'appartient pas à l'organisation",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @GetMapping("/by-event/{eventId}")
   public List<TicketTypeResponse> listByEvent(
@@ -201,9 +233,26 @@ public class TicketTypeController {
         @ApiResponse(
             responseCode = "400",
             description =
-                "Requête invalide (quantité < vendus, fenêtre incohérente, UUID invalide, orgId manquant pour super admin)"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "404", description = "Type de ticket introuvable")
+                "Requête invalide (quantité < vendus, fenêtre incohérente, UUID invalide, orgId manquant pour super admin)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Type de ticket introuvable",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description = "Champs à mettre à jour. Tous les champs sont optionnels.",
@@ -251,14 +300,35 @@ public class TicketTypeController {
   @ApiResponses(
       value = {
         @ApiResponse(responseCode = "200", description = "Type de ticket supprimé avec succès"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "404", description = "Type de ticket introuvable"),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Type de ticket introuvable",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "409",
-            description = "Impossible de supprimer : des tickets ont déjà été vendus"),
+            description = "Impossible de supprimer : des tickets ont déjà été vendus",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Conflict", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "400",
-            description = "UUID invalide ou orgId manquant pour super admin")
+            description = "UUID invalide ou orgId manquant pour super admin",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON)))
       })
   @DeleteMapping("/{id}")
   public void delete(

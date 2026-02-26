@@ -15,10 +15,12 @@ import com.oneevent.event.api.mapper.EventMapper;
 import com.oneevent.event.application.EventService;
 import com.oneevent.event.domain.Event;
 import com.oneevent.shared.api.PageResponse;
+import com.oneevent.shared.exception.ApiError;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -54,9 +56,26 @@ public class EventController {
         @ApiResponse(
             responseCode = "400",
             description =
-                "Requête invalide (dates invalides, champs manquants, organizationId requis pour super admin)"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "403", description = "Accès refusé (organization requise)")
+                "Requête invalide (dates invalides, champs manquants, organizationId requis pour super admin)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Accès refusé (organization requise)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Forbidden", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description =
@@ -89,9 +108,28 @@ public class EventController {
             responseCode = "200",
             description = "Liste des événements récupérée avec succès",
             content = @Content(schema = @Schema(implementation = PageResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Paramètre orgId requis pour super admin"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "403", description = "Accès refusé")
+        @ApiResponse(
+            responseCode = "400",
+            description = "Paramètre orgId requis pour super admin",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Accès refusé",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Forbidden", value = ApiError.EXAMPLE_JSON)))
       })
   @GetMapping
   public PageResponse<EventResponse> listMine(
@@ -121,12 +159,33 @@ public class EventController {
             content = @Content(schema = @Schema(implementation = EventResponse.class))),
         @ApiResponse(
             responseCode = "400",
-            description = "ID invalide ou paramètre orgId requis pour super admin"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            description = "ID invalide ou paramètre orgId requis pour super admin",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Accès refusé",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Forbidden", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "404",
-            description = "Événement introuvable ou n'appartient pas à votre organisation")
+            description = "Événement introuvable ou n'appartient pas à votre organisation",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @GetMapping("/{id}")
   public EventResponse getMine(
@@ -155,12 +214,33 @@ public class EventController {
         @ApiResponse(
             responseCode = "400",
             description =
-                "Requête invalide (dates invalides, ID invalide, paramètre orgId requis pour super admin)"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "403", description = "Accès refusé"),
+                "Requête invalide (dates invalides, ID invalide, paramètre orgId requis pour super admin)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Accès refusé",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Forbidden", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "404",
-            description = "Événement introuvable ou n'appartient pas à votre organisation")
+            description = "Événement introuvable ou n'appartient pas à votre organisation",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description =
@@ -202,12 +282,33 @@ public class EventController {
         @ApiResponse(responseCode = "200", description = "Événement supprimé avec succès"),
         @ApiResponse(
             responseCode = "400",
-            description = "ID invalide ou paramètre orgId requis pour super admin"),
-        @ApiResponse(responseCode = "401", description = "Non authentifié"),
-        @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            description = "ID invalide ou paramètre orgId requis pour super admin",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Non authentifié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Accès refusé",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Forbidden", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "404",
-            description = "Événement introuvable ou n'appartient pas à votre organisation")
+            description = "Événement introuvable ou n'appartient pas à votre organisation",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @DeleteMapping("/{id}")
   public void delete(

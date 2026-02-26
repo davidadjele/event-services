@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.oneevent.shared.exception.ApiError;
 import com.oneevent.ticket.api.dto.PublicTicketTypeResponse;
 import com.oneevent.ticket.api.mapper.TicketTypeMapper;
 import com.oneevent.ticket.application.TicketTypeService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -66,10 +68,20 @@ public class PublicTicketTypeController {
                     array =
                         @ArraySchema(
                             schema = @Schema(implementation = PublicTicketTypeResponse.class)))),
-        @ApiResponse(responseCode = "404", description = "Événement introuvable ou non publié"),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Événement introuvable ou non publié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON))),
         @ApiResponse(
             responseCode = "400",
-            description = "L'identifiant fourni n'est pas un UUID valide")
+            description = "L'identifiant fourni n'est pas un UUID valide",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON)))
       })
   @GetMapping("/by-event/{eventId}")
   public List<PublicTicketTypeResponse> listForPublishedEvent(
