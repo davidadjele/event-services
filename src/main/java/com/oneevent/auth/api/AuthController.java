@@ -1,5 +1,7 @@
 package com.oneevent.auth.api;
 
+import static com.oneevent.shared.constants.ApiPaths.AUTH;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,11 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.oneevent.auth.application.AuthService;
 import com.oneevent.organization.domain.CountryCode;
+import com.oneevent.shared.exception.ApiError;
 import com.oneevent.shared.security.principal.AuthenticatedUser;
 import com.oneevent.shared.validation.CurrencyCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -29,7 +33,7 @@ import lombok.RequiredArgsConstructor;
     name = "Authentification",
     description = "API de gestion de l'authentification et inscription des utilisateurs")
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(AUTH)
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -45,8 +49,21 @@ public class AuthController {
             responseCode = "200",
             description = "Connexion réussie",
             content = @Content(schema = @Schema(implementation = AuthService.AuthToken.class))),
-        @ApiResponse(responseCode = "401", description = "Email ou mot de passe invalide"),
-        @ApiResponse(responseCode = "400", description = "Requête invalide (validation échouée)")
+        @ApiResponse(
+            responseCode = "401",
+            description = "Email ou mot de passe invalide",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Requête invalide (validation échouée)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description = "Identifiants de connexion (email et mot de passe)",
@@ -66,8 +83,20 @@ public class AuthController {
             responseCode = "200",
             description = "Inscription réussie",
             content = @Content(schema = @Schema(implementation = AuthService.AuthToken.class))),
-        @ApiResponse(responseCode = "409", description = "Cet email est déjà utilisé"),
-        @ApiResponse(responseCode = "400", description = "Requête invalide (validation échouée)")
+        @ApiResponse(
+            responseCode = "409",
+            description = "Cet email est déjà utilisé",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Conflict", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Requête invalide (validation échouée)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description = "Informations d'inscription du participant",
@@ -88,8 +117,20 @@ public class AuthController {
             responseCode = "200",
             description = "Inscription réussie",
             content = @Content(schema = @Schema(implementation = AuthService.AuthToken.class))),
-        @ApiResponse(responseCode = "409", description = "Cet email est déjà utilisé"),
-        @ApiResponse(responseCode = "400", description = "Requête invalide (validation échouée)")
+        @ApiResponse(
+            responseCode = "409",
+            description = "Cet email est déjà utilisé",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "Conflict", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Requête invalide (validation échouée)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON)))
       })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       description = "Informations d'inscription de l'organisateur et de son organisation",
@@ -112,7 +153,12 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = MeResponse.class))),
         @ApiResponse(
             responseCode = "401",
-            description = "Non authentifié (token manquant ou invalide)")
+            description = "Non authentifié (token manquant ou invalide)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples =
+                        @ExampleObject(name = "Unauthorized", value = ApiError.EXAMPLE_JSON)))
       })
   @GetMapping("/me")
   public MeResponse me(@AuthenticationPrincipal AuthenticatedUser p) {

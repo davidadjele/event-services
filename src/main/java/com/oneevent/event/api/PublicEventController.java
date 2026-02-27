@@ -1,5 +1,7 @@
 package com.oneevent.event.api;
 
+import static com.oneevent.shared.constants.ApiPaths.PUBLIC_EVENTS;
+
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -10,10 +12,12 @@ import com.oneevent.event.api.dto.PublicEventResponse;
 import com.oneevent.event.api.mapper.EventMapper;
 import com.oneevent.event.application.EventService;
 import com.oneevent.shared.api.PageResponse;
+import com.oneevent.shared.exception.ApiError;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +30,7 @@ import lombok.RequiredArgsConstructor;
         "API publique pour consulter les événements publiés. Aucune authentification requise.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/public/events")
+@RequestMapping(PUBLIC_EVENTS)
 public class PublicEventController {
 
   private final EventService service;
@@ -66,8 +70,20 @@ public class PublicEventController {
             responseCode = "200",
             description = "Événement public récupéré avec succès",
             content = @Content(schema = @Schema(implementation = PublicEventResponse.class))),
-        @ApiResponse(responseCode = "400", description = "ID invalide (format UUID incorrect)"),
-        @ApiResponse(responseCode = "404", description = "Événement introuvable ou non publié")
+        @ApiResponse(
+            responseCode = "400",
+            description = "ID invalide (format UUID incorrect)",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "BadRequest", value = ApiError.EXAMPLE_JSON))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Événement introuvable ou non publié",
+            content =
+                @Content(
+                    schema = @Schema(implementation = ApiError.class),
+                    examples = @ExampleObject(name = "NotFound", value = ApiError.EXAMPLE_JSON)))
       })
   @GetMapping("/{id}")
   public PublicEventResponse getPublished(

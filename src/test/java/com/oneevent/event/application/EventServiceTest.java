@@ -98,8 +98,7 @@ class EventServiceTest {
 
       // Mock SecurityContext pour simuler un organisateur
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When
         Event result = service.create(cmd);
@@ -134,8 +133,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.create(cmd))
@@ -161,8 +159,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForWrite(null)).thenReturn(ORG_ID);
 
         // When
         Event result = service.create(cmd);
@@ -193,8 +190,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         Page<Event> result = service.listMine(null, pageable);
@@ -222,8 +218,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         Event result = service.getMine(null, EVENT_ID);
@@ -245,8 +240,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.getMine(null, EVENT_ID))
@@ -291,8 +285,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         Event result = service.update(EVENT_ID, null, cmd);
@@ -333,8 +326,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         Event result = service.update(EVENT_ID, null, cmd);
@@ -367,8 +359,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.update(EVENT_ID, null, cmd))
@@ -391,8 +382,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.update(EVENT_ID, null, cmd))
@@ -417,8 +407,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When
         service.softDelete(EVENT_ID, null);
@@ -438,8 +427,7 @@ class EventServiceTest {
 
       // Mock SecurityContext
       try (MockedStatic<SecurityContext> mockedSecurity = mockStatic(SecurityContext.class)) {
-        mockedSecurity.when(SecurityContext::isSuperAdmin).thenReturn(false);
-        mockedSecurity.when(SecurityContext::requireOrgId).thenReturn(ORG_ID);
+        mockedSecurity.when(() -> SecurityContext.resolveOrgIdForList(null)).thenReturn(ORG_ID);
 
         // When / Then
         assertThatThrownBy(() -> service.softDelete(EVENT_ID, null))
